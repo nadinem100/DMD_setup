@@ -27,18 +27,10 @@ if __name__ == "__main__":
 
     # Create and load rows with different patterns
     for row in range(NUM_ROWS):
-        if row < NUM_ROWS // 2:
-            # First half pattern: 400 white pixels, 624 black pixels
-            white_pixels = 400
-            black_pixels = ROW_WIDTH - white_pixels
-            pixel_array = [1] * white_pixels + [0] * black_pixels
-        else:
-            # Second half pattern: 624 white pixels, 400 black pixels
-            white_pixels = 624
-            black_pixels = ROW_WIDTH - white_pixels
-            pixel_array = [1] * white_pixels + [0] * black_pixels
+        white_pixels = 300
+        black_pixels = ROW_WIDTH - white_pixels
+        pixel_array = [1] * white_pixels + [0] * black_pixels
 
         row_data = create_bit_packed_row(pixel_array)
         uchar_array = (ctypes.c_ubyte * len(row_data))(*row_data)
-        dmd.set_row_address(row)
         dmd.load_row(uchar_array)

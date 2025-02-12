@@ -90,10 +90,6 @@ class DMD:
         )
         if load_data_result != 1:
             raise Exception(f"[ERROR] Failed to load row. DMDType: {self.dmd_type}, Return code: {load_data_result}")
-        # commit the loaded data:
-        commit = self.dmd.LoadControl(ctypes.c_short(self.device_number))
-        if commit != 1:
-            print(f"[WARNING] LoadControl commit returned {commit}")
 
     def set_row_address(self, row_index):
         """Set the target row address (within the current block) in the ROWAD register."""
