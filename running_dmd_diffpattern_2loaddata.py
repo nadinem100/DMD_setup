@@ -20,10 +20,8 @@ if __name__ == "__main__":
     # Build batch 1 (global rows 0 to 383)
     batch1 = bytearray()
     for global_row in range(0, BATCH_ROWS):
-        # For the first half (global rows 0-383), use one pattern.
-        # For example, let the first 300 pixels be 0 and the rest 1.
+        # let the first 300 pixels be 0 and the rest 1.
         white_pixels = 300
-        # Note: change the pattern here if desired.
         pixel_array = [0] * white_pixels + [1] * (ROW_WIDTH - white_pixels)
         row_data_bytes = create_bit_packed_row(pixel_array, row_width=ROW_WIDTH)
         batch1.extend(row_data_bytes)
@@ -43,8 +41,6 @@ if __name__ == "__main__":
     # Build batch 2 (global rows 384 to 767)
     batch2 = bytearray()
     for global_row in range(BATCH_ROWS, NUM_ROWS):
-        # For the second half (global rows 384-767), use a different pattern.
-        # For example, let the first 300 pixels be 1 and the rest 0.
         white_pixels = 300
         pixel_array = [1] * white_pixels + [0] * (ROW_WIDTH - white_pixels)
         row_data_bytes = create_bit_packed_row(pixel_array, row_width=ROW_WIDTH)

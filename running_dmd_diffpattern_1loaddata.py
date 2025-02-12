@@ -27,8 +27,7 @@ if __name__ == "__main__":
     # Each row is bit-packed to ROW_WIDTH/8 bytes; full frame is NUM_ROWS * (ROW_WIDTH/8) bytes.
     full_frame = bytearray()
     for global_row in range(NUM_ROWS):
-        # Choose a pattern based on the global row index:
-        # For example, for rows in the top half, let pixels 0-299 be 0 (black) and the rest 1 (white);
+        # for rows in the top half, let pixels 0-299 be 0 (black) and the rest 1 (white);
         # for rows in the bottom half, reverse the pattern.
         if global_row < NUM_ROWS // 2:
             white_pixels = 300
