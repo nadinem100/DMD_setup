@@ -14,16 +14,16 @@ if __name__ == "__main__":
     # Create the DMD instance
     dmd = DMD(DLL_PATH, device_number=DEVICE_NUMBER, row_width=ROW_WIDTH, num_rows=NUM_ROWS)
 
-    # dmd.trying_gui()
     # Clear the DMD display first
-    dmd.reset_clear_old()
+    # dmd.reset_clear()
+    # dmd.dmd.SetBlkAd(ctypes.c_short(0), dmd.device_number)
 
     # Build batch 1 (global rows 0 to 383)
     batch1 = bytearray()
     for global_row in range(0, BATCH_ROWS):
         # let the first 300 pixels be 0 and the rest 1.
-        white_pixels = 800
-        pixel_array = [0]*ROW_WIDTH #[1] * 100 + [0] * 200 + [1] * (ROW_WIDTH - 300)
+        white_pixels = 500
+        pixel_array = [0] * white_pixels + [1] * (ROW_WIDTH - white_pixels)
         row_data_bytes = create_bit_packed_row(pixel_array, row_width=ROW_WIDTH)
         batch1.extend(row_data_bytes)
     total_length_batch1 = len(batch1)
@@ -42,8 +42,8 @@ if __name__ == "__main__":
     # Build batch 2 (global rows 384 to 767)
     batch2 = bytearray()
     for global_row in range(BATCH_ROWS, NUM_ROWS):
-        white_pixels = 600
-        pixel_array = [1] * ROW_WIDTH # [0] * white_pixels + [1] * (ROW_WIDTH - white_pixels)
+        white_pixels = 500
+        pixel_array = [1] * white_pixels + [0] * (ROW_WIDTH - white_pixels)
         row_data_bytes = create_bit_packed_row(pixel_array, row_width=ROW_WIDTH)
         batch2.extend(row_data_bytes)
     total_length_batch2 = len(batch2)
@@ -55,15 +55,12 @@ if __name__ == "__main__":
 
     # Load the second half of the frame (batch 2)
     dmd.load_row(batch2_array)
+    print("[INFO] Batch 2 loaded (rows 384 to 767).")
 
-    # dmd.dmd.SetBlkMd(ctypes.c_short(3), dmd.device_number) #what does this do and howdid it work omgggg
-    # # dmd.dmd.SetBlkAd(ctypes.c_short(8), dmd.device_number)
-    # print("[INFO] Batch 2 loaded (rows 384 to 767).")
-    #
+    # dmd.dmd.SetBlkMd(ctypes.c_short(3), dmd.device_number)
+    # dmd.dmd.SetBlkAd(ctypes.c_short(8), dmd.device_number)
     # # Finally, commit the entire frame update with one call.
-    # dmd.load_control()
-    # dmd.load_control()
-    # dmd.load_control()
-    print("[INFO] Full frame update committed.")
-    dmd.reset_clear()
-
+    dmd.load_control()
+    dmd.load_control()
+    dmd.load_control()
+    # print("[INFO] Full frame update committed.")

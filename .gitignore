@@ -1,0 +1,48 @@
+# Python virtual environments
+.venv/
+.venv1/
+venv/
+venv_*/
+env/
+ENV/
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# IDE settings
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Results and data directories
+dmd_column_scan_results_*/
+results/
+output/
+
+# Temporary files
+dmd_pattern.npy
+dmd_status.txt
+*.tmp
+
+# Claude Code
+.claude/
+
+# NumPy arrays and data files
+*.npy
+*.npz
+
+# Images (unless you want to track specific ones)
+*.png
+*.jpg
+*.jpeg
+
+# Log files
+*.log

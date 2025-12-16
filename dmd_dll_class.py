@@ -39,6 +39,7 @@ class DMD:
         print(f"[INFO] Number of connected devices: {num_devices}")
         if num_devices < 1:
             raise Exception("[ERROR] No DMD devices found!")
+        print(f"FPGARev: {self.dmd.GetFPGARev(ctypes.c_short(self.device_number))}") #getting -1409146100, this is probably the real number
         return num_devices
 
     def get_dmd_type(self):
@@ -50,23 +51,47 @@ class DMD:
         except Exception as e:
             raise Exception(f"[ERROR] Failed to get DMD type. Error: {e}")
 
-    def reset_clear(self):
-        """Clear the DMD display."""
-        # Example calls – adjust according to your DLL API
-        self.dmd.SetRST2BLKZ(ctypes.c_short(0), ctypes.c_short(self.device_number))
-        print('After setting RST2BLKZ to 0, value is:',
-              self.dmd.GetRST2BLKZ(ctypes.c_short(self.device_number)))
-        print('Current row mode:', self.dmd.GetRowMd(ctypes.c_short(self.device_number)))
-        success = self.dmd.SetRowMd(ctypes.c_short(1), ctypes.c_short(self.device_number))
-        print('RowMd set result (1 if successful):', success)
+    def trying_gui(self):
+        self.dmd.SetBlkMd(ctypes.c_short(1), ctypes.c_short(self.device_number))
+        self.dmd.SetBlkAd(ctypes.c_short(8), ctypes.c_short(self.device_number))
+        self.load_control()
+        self.load_control()
+        self.load_control()
 
-        # Commit control values
-        for _ in range(3):
-            control_result = self.dmd.LoadControl(ctypes.c_short(self.device_number))
-        if control_result == 1:
-            print("[SUCCESS] LoadControl committed.")
-        else:
-            raise Exception(f"[ERROR] Failed to LoadControl. Return code: {control_result}")
+
+    def reset_clear_old(self):
+        """Clear the DMD display."""
+        # print('WDT num is', self.dmd.GetWDT(self.device_number))
+        # self.dmd.SetWDT(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # self.dmd.SetTPGEnable(ctypes.c_short(0), ctypes.c_short(self.device_number))
+
+        self.dmd.SetBlkMd(ctypes.c_short(0), ctypes.c_short(self.device_number)) # NoOp = 0
+        # self.load_control()
+        # print('After setting BlkMd to 0, value is:',
+        #       self.dmd.GetBlkMd(ctypes.c_short(self.device_number)))
+
+        # print('Current row mode:', self.dmd.GetRowMd(ctypes.c_short(self.device_number)))
+        success = self.dmd.SetRowMd(ctypes.c_short(3), ctypes.c_short(self.device_number))
+        print('RowMd set result (1 if successful):', success)
+        success = self.dmd.SetNSFLIP(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        print('RowMd set result (1 if successful):', success)
+        self.load_control()
+        self.load_control()
+        self.load_control()
+
+        self.dmd.SetRowMd(ctypes.c_short(1), ctypes.c_short(self.device_number))
+        self.dmd.SetRowAddr(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # self.dmd.SetNSFLIP(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        self.load_control()
+
+
+        # # Commit control values
+        # for _ in range(3):
+        #     control_result = self.dmd.LoadControl(ctypes.c_short(self.device_number))
+        # if control_result == 1:
+        #     print("[SUCCESS] LoadControl committed.")
+        # else:
+        #     raise Exception(f"[ERROR] Failed to LoadControl. Return code: {control_result}")
 
         print("[INFO] Clearing the DMD display...")
         clear_result = self.dmd.ClearFifos(ctypes.c_short(self.device_number))
@@ -74,6 +99,94 @@ class DMD:
             print("[SUCCESS] DMD cleared successfully!")
         else:
             raise Exception(f"[ERROR] Failed to ClearFifos. Return code: {clear_result}")
+
+    def reset_clear_oldd(self):
+        """Clear the DMD display."""
+        # print('WDT num is', self.dmd.GetWDT(self.device_number))
+        # self.dmd.SetWDT(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # self.dmd.SetTPGEnable(ctypes.c_short(0), ctypes.c_short(self.device_number))
+
+        self.dmd.SetBlkMd(ctypes.c_short(3), ctypes.c_short(self.device_number))
+        self.load_control()
+        print('After setting BlkMd to 0, value is:',
+              self.dmd.GetBlkMd(ctypes.c_short(self.device_number)))
+
+        # print('Current row mode:', self.dmd.GetRowMd(ctypes.c_short(self.device_number)))
+        success = self.dmd.SetRowMd(ctypes.c_short(3), ctypes.c_short(self.device_number))
+        print('RowMd set result (1 if successful):', success)
+        success = self.dmd.SetNSFLIP(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        print('RowMd set result (1 if successful):', success)
+        self.load_control()
+
+        self.dmd.SetRowMd(ctypes.c_short(1), ctypes.c_short(self.device_number))
+        self.dmd.SetRowAddr(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        self.dmd.SetNSFLIP(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        self.load_control()
+
+
+        # # Commit control values
+        # for _ in range(3):
+        #     control_result = self.dmd.LoadControl(ctypes.c_short(self.device_number))
+        # if control_result == 1:
+        #     print("[SUCCESS] LoadControl committed.")
+        # else:
+        #     raise Exception(f"[ERROR] Failed to LoadControl. Return code: {control_result}")
+
+        print("[INFO] Clearing the DMD display...")
+        clear_result = self.dmd.ClearFifos(ctypes.c_short(self.device_number))
+        if clear_result == 1:
+            print("[SUCCESS] DMD cleared successfully!")
+        else:
+            raise Exception(f"[ERROR] Failed to ClearFifos. Return code: {clear_result}")
+
+    def reset_clear(self):
+        """Clear the DMD display."""
+        # print('WDT num is', self.dmd.GetWDT(self.device_number))
+        # self.dmd.SetWDT(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # self.dmd.SetTPGEnable(ctypes.c_short(0), ctypes.c_short(self.device_number))
+
+        # self.dmd.SetBlkMd(ctypes.c_short(3), ctypes.c_short(self.device_number))
+        # self.load_control()
+        # print('After setting BlkMd to 0, value is:',
+        #       self.dmd.GetBlkMd(ctypes.c_short(self.device_number)))
+
+        # print('Current row mode:', self.dmd.GetRowMd(ctypes.c_short(self.device_number)))
+        success = self.dmd.SetRowMd(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        self.dmd.SetBlkMd(ctypes.c_short(3), ctypes.c_short(self.device_number))
+        self.dmd.SetBlkAd(ctypes.c_short(8), ctypes.c_short(self.device_number))
+        # print('RowMd set result (1 if successful):', success)
+        # success = self.dmd.SetNSFLIP(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # print('RowMd set result (1 if successful):', success)
+        self.load_control()
+        self.load_control()
+        self.load_control()
+
+        self.dmd.SetBlkMd(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        self.load_control()
+        self.load_control()
+        self.load_control()
+
+        # self.dmd.SetRowMd(ctypes.c_short(1), ctypes.c_short(self.device_number))
+        # self.dmd.SetRowAddr(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # self.dmd.SetNSFLIP(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        # self.load_control()
+
+
+        # # Commit control values
+        # for _ in range(3):
+        #     control_result = self.dmd.LoadControl(ctypes.c_short(self.device_number))
+        # if control_result == 1:
+        #     print("[SUCCESS] LoadControl committed.")
+        # else:
+        #     raise Exception(f"[ERROR] Failed to LoadControl. Return code: {control_result}")
+
+        print("[INFO] Clearing the DMD display...")
+        # clear_result = self.dmd.ClearFifos(ctypes.c_short(self.device_number))
+        # if clear_result == 1:
+        #     print("[SUCCESS] DMD cleared successfully!")
+        # else:
+        #     raise Exception(f"[ERROR] Failed to ClearFifos. Return code: {clear_result}")
+
 
     def load_row(self, row_data):
         """
@@ -105,12 +218,22 @@ class DMD:
             raise Exception(f"[ERROR] Failed to set block address to {block}")
         # print(f"[INFO] Block address set to {block}.")
 
-    def commit_frame(self):
+    def load_control(self):
         """Commit the full frame (or block) update by calling LoadControl once."""
         commit = self.dmd.LoadControl(ctypes.c_short(self.device_number))
         if commit != 1:
             raise Exception(f"[ERROR] Final LoadControl commit returned {commit}")
         print("[INFO] Frame updated successfully.")
+
+    def float_mirrors(self):
+        """float da mirrors"""
+        self.dmd.SetWDT(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        success = self.dmd.SetPWRFLOAT(ctypes.c_short(0), ctypes.c_short(self.device_number))
+        if success != 1:
+            raise Exception(f"[ERROR] SetPWRFLOAT {success}")
+        print("[INFO] Mirrors successfully floated.")
+        self.load_control()
+
 
 
 # Utility function to create a bit-packed row from a pixel array

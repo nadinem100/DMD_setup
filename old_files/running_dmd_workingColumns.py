@@ -28,8 +28,8 @@ def create_bit_packed_row(pixel_array, row_width=1024):
         packed_bytes.append(byte)
 
     #debugging
-    for byte in packed_bytes:
-        print(f"{byte}")
+    # for byte in packed_bytes:
+    #     print(f"{byte}")
 
     # Convert to ctypes uchar* (unsigned char pointer)
     # uchar_array = (ctypes.c_ubyte * len(packed_bytes))(*packed_bytes)
@@ -57,29 +57,23 @@ if __name__ == "__main__":
     ALL_row_data=bytearray()
     for row in range(NUM_ROWS):
 
-        black_pixels = 400
-        white_pixels = 400
+        black_pixels = 420
+        white_pixels = 420
         remaining_pixels = ROW_WIDTH - (black_pixels + white_pixels)  # Fill the gap
 
-        # if row < NUM_ROWS/2:
-            # Construct the row explicitly
-            # checkerboard_row = ([0x00] * black_pixels + [0xFF] * white_pixels + [0x00] * remaining_pixels)
-            # row_data = checkerboard_row[:ROW_WIDTH]
-            # assert black_pixels + white_pixels <= row_width, "Total pixels exceed row width!"
-
-            # desired array of 0s (white) and 1s (black), this is messed up rn
         pixel_array = [1] * black_pixels + [0] * white_pixels + [1] * remaining_pixels
 
-        # else:
-        #     pixel_array = [0] * black_pixels + [1] * white_pixels + [0] * remaining_pixels
 
         row_data23 = create_bit_packed_row(pixel_array)
-        # ALL_row_data.extend(row_data23)
-
-        uchar_array = (ctypes.c_ubyte * ROW_WIDTH)(*row_data23)
-        # uchar_array = (ctypes.c_ubyte * len(ALL_row_data))(*ALL_row_data)
+        uchar_array = (ctypes.c_ubyte * len(row_data23*8))(*row_data23)
         dmd.load_row(uchar_array)
         # total_rows.append(row_data)
+
+    # # Plot and display the rows after loop
+    # plt.imshow(np.array(total_rows), cmap='gray', aspect='auto')
+
+
+
 
 
 
