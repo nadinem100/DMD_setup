@@ -1,0 +1,9 @@
+# DMD Control Software Requirements
+# Python packages needed to run DMD control scripts
+
+numpy>=1.24.0
+matplotlib>=3.7.0
+Pillow>=10.0.0
+
+# For Windows COM interface (old files only)
+# pywin32>=305
